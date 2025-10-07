@@ -1,0 +1,3 @@
+2025-10-07 10:52:48,352 - INFO [Log,0] LogService 0 up and running!
+2025-10-07 10:52:54,342 - WARNING [Log,0] LogService,0 received request to shut down.
+2025-10-07 10:52:54,343 - INFO [Log,0] LogService 0 is shutting down

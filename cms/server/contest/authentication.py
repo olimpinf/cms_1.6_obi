@@ -31,6 +31,9 @@ import logging
 from datetime import datetime, timedelta
 import typing
 
+# ranido-begin
+from sqlalchemy import update
+# ranido-end
 from sqlalchemy.orm import contains_eager, joinedload
 
 from cms import config
@@ -166,6 +169,24 @@ def validate_login(
 
     # If hashing is used, the cookie stores the hashed password so that
     # the expensive bcrypt call doesn't need to be done at every request.
+
+    # ranido-begin
+    # if participation.ip is None:
+    #     #first time, fix the contestant ip
+    #     logger.info("First login from IP address %s, as user %r, on "
+    #                 "contest %s, at %s", ip_address, participation.user.username, contest.name,
+    #                 timestamp)
+    # else:
+    #     logger.info("NEW login from IP address %s, as user %r, on "
+    #                 "contest %s, at %s", ip_address, participation.user.username, contest.name,
+    #                 timestamp)
+
+    # ip_address = ((str(ip_address)),)
+    # sql_session.query(Participation).filter(Participation.id == participation.id).update({'ip': ip_address})
+    # sql_session.commit()
+    # logger.info(f"saved IP, {participation.ip}")
+    # ranido-end
+
     return (participation,
             json.dumps([username, correct_password, make_timestamp(timestamp), False])
                 .encode("utf-8"))

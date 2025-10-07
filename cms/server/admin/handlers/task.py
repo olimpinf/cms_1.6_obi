@@ -188,10 +188,9 @@ class TaskHandler(BaseHandler):
 
                 # ranido-begin
                 for language in task.contest.languages:
-                    self.get_time_limit_lang(attrs, f"time_limit_lang_{language}_{dataset.id}", language)
-                    self.get_memory_limit_lang(attrs, f"memory_limit_lang_{language}_{dataset.id}", language)
+                   self.get_time_limit_lang(attrs, f"time_limit_lang_{language}_{dataset.id}", language)
+                   self.get_memory_limit_lang(attrs, f"memory_limit_lang_{language}_{dataset.id}", language)
                 #ranido-end
-
                 self.get_time_limit(attrs, "time_limit_%d" % dataset.id)
                 self.get_memory_limit(attrs, "memory_limit_%d" % dataset.id)
                 self.get_task_type(attrs, "task_type_%d" % dataset.id,

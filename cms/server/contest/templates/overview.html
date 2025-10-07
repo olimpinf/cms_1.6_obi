@@ -14,7 +14,13 @@
 <h2>{% trans %}General information{% endtrans %}</h2>
 <div class="row">
     <div class="{% if contest.per_user_time is not none %}span5{% else %}span9{% endif %}">
-        <p>
+
+      {# ranido-begin #}
+      <h4>Veja a <a href="{{ url("static", "FolhaInformacoes.pdf") }}" target="_blank">Folha de Informações</a> antes de iniciar a prova.</h4>
+      <p>&nbsp</p>
+      {# ranido-end #}      
+
+      <p>
 {% if phase == -1 %}
         {% trans %}The contest hasn't started yet.{% endtrans %}
         </p>
@@ -168,7 +174,10 @@
         <form action="{{ contest_url("start") }}" method="POST" style="margin: 0">
             {{ xsrf_form_html|safe }}
             <input type="hidden" name="next" value="{{ contest_url() }}">
-            <button type="submit" class="btn btn-danger btn-large" style="width:100%;-moz-box-sizing:border-box;box-sizing:border-box;">{% trans %}Start!{% endtrans %}</button>
+
+	    {# ranido-begin #}
+            <button type="submit" class="btn btn-danger btn-large" style="width:100%;-moz-box-sizing:border-box;box-sizing:border-box;" type="submit" onclick="alert('Eu atesto que estou fazendo a prova na escola, sob supervisão, e que não usarei ferramentas de inteligência artificial nem consultarei a internet para tentar resolver as tarefas. Entendo que a violação das regras da OBI implicará na minha desclassificação.')">{% trans %}Start!{% endtrans %}</button>
+	    {# ranido-end #}
         </form>
     {% endif %}
 
@@ -241,6 +250,28 @@
     </tbody>
 </table>
 {% endif %}
+
+{# ranido-begin #}
+<p>Para soluções em Java, o nome do arquivo deve
+  ser <em>xxxx.java</em> e o nome da classe principal deve
+  ser <em>xxxx</em>, onde <em>xxxx</em> é o identificador da tarefa
+  {% if actual_phase == 0 or actual_phase == 3 %} (primeira coluna à
+  esquerda na tabela acima){% endif %}. Note que todas as letras
+  de <em>xxxx</em> são minúsculas.
+</p>
+{# TO DO!! copy files to static
+<p>Veja instruções para submissão e exemplos de soluções nas diferentes linguagens:
+  <ul>
+    <li><a target="_blank" href="https://olimpiada.ic.unicamp.br/pratique/exemplo_solucao_c">C</a></li>
+    <li><a target="_blank" href="https://olimpiada.ic.unicamp.br/pratique/exemplo_solucao_cpp">C++</a></li>
+    <li><a target="_blank" href="https://olimpiada.ic.unicamp.br/pratique/exemplo_solucao_py3">Python3</a></li>
+    <li><a target="_blank" href="https://olimpiada.ic.unicamp.br/pratique/exemplo_solucao_cms_java">Java</a></li>
+    <li><a target="_blank" href="https://olimpiada.ic.unicamp.br/pratique/exemplo_solucao_js">Javascript</a></li>
+  </ul>
+</p>
+#}
+{# ranido-end #}
+
 
 </div>
 {% endblock core %}

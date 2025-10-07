@@ -48,9 +48,13 @@ $(document).ready(function () {
 
 {% block body %}
         <div id="navigation_bar" class="navbar navbar-fixed-top">
+{# ranido-begin #}
+            {% include "header_logo.html" %}
+{# ranido-end #}
             <div class="navbar-inner">
                 <div class="container">
                     <a class="brand" href="{{ contest_url() }}">{{ contest.description }}</a>
+{# ranido-begin
 {% if available_translations|length > 1 %}
                     <p class="navbar-text pull-right">
                         <select id="lang" class="form-control btn btn-info" onchange="utils.switch_lang()">
@@ -61,6 +65,7 @@ $(document).ready(function () {
                         </select>
                     </p>
 {% endif %}
+ranido-end #}		    
 {% if participation is defined %}
                     <form action="{{ contest_url("logout") }}" method="POST" class="navbar-form pull-right">
                         {{ xsrf_form_html|safe }}
