@@ -97,6 +97,18 @@ class BaseHandler(CommonRequestHandler):
         """
         super().prepare()
         self.setup_locale()
+        # ranido-begin
+        # get real ip
+        # forwarded = self.request.headers.get("X-Forwarded-For")
+        # real_ip = self.request.headers.get("X-Real-IP")
+        # self.real_client_ip = (
+        #     forwarded.split(",")[0].strip()
+        #     if forwarded
+        #     else (real_ip or self.request.remote_ip)
+        # )
+        # self.real_client_ip = str(self.real_client_ip)
+        # logger.warning(f"real_client_ip = {self.real_client_ip}")
+        # ranido-end
 
     def setup_locale(self):
         lang_codes = list(self.available_translations.keys())

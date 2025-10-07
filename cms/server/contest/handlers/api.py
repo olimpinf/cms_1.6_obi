@@ -26,8 +26,8 @@ import logging
 from cms.db.submission import Submission
 from cms.server import multi_contest
 from cms.server.contest.authentication import validate_login
-from cms.server.contest.submission import \
-    UnacceptableSubmission, accept_submission
+from cms.server.contest.submission import UnacceptableSubmission, accept_submission \
+    TestingNotAllowed, UnacceptableUserTest, accept_user_test
 from .contest import ContestHandler, api_login_required
 from ..phase_management import actual_phase_required
 
@@ -69,7 +69,16 @@ class ApiLoginHandler(ApiContestHandler):
             return
 
         try:
-            ip_address = ipaddress.ip_address(self.request.remote_ip)
+            # ranido-begin
+            # sometimes your application will be behind a proxy, for example if
+            # you use nginx and UWSGI and you will always get something like 127.0.0.1
+            # for the remote IP. In this case you need to check the headers too
+            #ip_address = ipaddress.ip_address(self.request.remote_ip)
+            real_ip = self.request.headers.get("X-Real-IP") or \
+                self.request.headers.get("X-Forwarded-For") or \
+                self.request.remote_ip
+            ip_address = ipaddress.ip_address(str(real_ip))
+            # ranido-end
         except ValueError:
             logger.warning("Invalid IP address provided by Tornado: %s",
                            self.request.remote_ip)
@@ -120,6 +129,7 @@ class ApiSubmitHandler(ApiContestHandler):
     @actual_phase_required(0, 3)
     @multi_contest
     def post(self, task_name: str):
+        logger.warning(f'API submission for task {task_name}')
         task = self.get_task(task_name)
         if task is None:
             self.json({"error": "Task not found"}, 404)
@@ -163,126 +173,6 @@ class ApiSubmitHandler(ApiContestHandler):
                 submission_id=submission.id)
             self.json({'id': str(submission.opaque_id)})
 
-# ranido-begin
-import tornado.web
-
-from cms import config
-from cms.db import UserTest, UserTestResult
-from cms.grading.languagemanager import get_language
-from cms.server import multi_contest
-from cms.server.contest.submission import get_submission_count, \
-    TestingNotAllowed, UnacceptableUserTest, accept_user_test
-from cmscommon.mimetypes import get_type_for_file_name
-from .contest import ContestHandler, FileHandler, api_login_required
-from ..phase_management import actual_phase_required
-
-
-
-class ApiTestHandler(ApiContestHandler):
-    """Handles the received submissions.
-
-    """
-    @api_login_required
-    @actual_phase_required(0, 3)
-    @multi_contest
-    def post(self, task_name):
-        if not self.r_params["testing_enabled"]:
-            raise tornado.web.HTTPError(404)
-
-        task = self.get_task(task_name)
-        if task is None:
-            raise tornado.web.HTTPError(404)
-
-        query_args = dict()
-        logger.warning('API submission received')
-        logger.warning(f'language: {self.get_argument("language", None)}')
-
-        try:
-            user_test = accept_user_test(
-                self.sql_session, self.service.file_cacher, self.current_user,
-                task, self.timestamp, self.request.files,
-                self.get_argument("language", None))
-            self.sql_session.commit()
-        except TestingNotAllowed:
-            logger.warning("User %s tried to make test on task %s.",
-                           self.current_user.user.username, task_name)
-            raise tornado.web.HTTPError(404)
-        except UnacceptableUserTest as e:
-            logger.info("Sent error: `%s' - `%s'", e.subject, e.formatted_text)
-            self.notify_error(e.subject, e.text, e.text_params)
-        else:
-            pass
-            self.service.evaluation_service.new_user_test(user_test_id=user_test.id)
-            logger.info(
-                 f'API submission accepted: Submission ID {user_test.id}')
-            self.json({'id': str(user_test.opaque_id)})
-
-
-class ApiTestStatusHandler(ApiContestHandler):
-
-    refresh_cookie = False
-
-    @api_login_required
-    @actual_phase_required(0)
-    @multi_contest
-    def get(self, task_name, opaque_id):
-        if not self.r_params["testing_enabled"]:
-            raise tornado.web.HTTPError(404)
-
-        task = self.get_task(task_name)
-        if task is None:
-            raise tornado.web.HTTPError(404)
-
-        logger.warning(f"test opaque_id = {opaque_id}")
-        logger.warning(f"current user = {self.current_user.user_id}")
-        user_test = self.do_get_user_test(task, opaque_id)
-        logger.warning(f"in test status, user_test = {user_test}")
-        
-        if user_test is None:
-            raise tornado.web.HTTPError(404)
-
-        ur = user_test.get_result(task.active_dataset)
-        data = dict()
-
-        if ur is None:
-            data["status"] = UserTestResult.COMPILING
-        else:
-            data["status"] = ur.get_status()
-
-        if data["status"] == UserTestResult.COMPILING:
-            data["status_text"] = self._("Compiling...")
-        elif data["status"] == UserTestResult.COMPILATION_FAILED:
-            data["status_text"] = self._("Compilation failed")
-            data["compilation_stderr"] = ur.compilation_stderr
-            data["compilation_stdout"] = ur.compilation_stdout
-        elif data["status"] == UserTestResult.EVALUATING:
-            data["status_text"] = self._("Executing...")
-        elif data["status"] == UserTestResult.EVALUATED:
-            data["status_text"] = self._("Executed")
-
-            if ur.execution_time is not None:
-                data["execution_time"] = \
-                    self.translation.format_duration(ur.execution_time)
-            else:
-                data["execution_time"] = None
-
-            if ur.execution_memory is not None:
-                data["memory"] = \
-                    self.translation.format_size(ur.execution_memory)
-            else:
-                data["memory"] = None
-
-            digest = ur.output
-            logger.warning(f"digest = {digest}")
-            try:
-                output = self.service.file_cacher.get_file_content(digest).decode('utf-8')
-            except:
-                output = ""
-            data["output"] = output
-            
-        self.write(data)
-
-# ranido-end
 
 class ApiSubmissionListHandler(ApiContestHandler):
     """Retrieves the list of submissions on a task.
@@ -303,3 +193,52 @@ class ApiSubmissionListHandler(ApiContestHandler):
             .all()
         )
         self.json({'list': [{"id": str(s.opaque_id)} for s in submissions]})
+
+class ApiTestHandler(ApiContestHandler):
+    """Handles the received test submissions.
+
+    """
+    @api_login_required
+    @actual_phase_required(0, 3)
+    @multi_contest
+    def post(self, task_name: str):
+        # logger.warning(f'API test submission for task {task_name}')
+        # task = self.get_task(task_name)
+        # if task is None:
+        #     self.json({"error": "Task not found"}, 404)
+        #     return
+
+        # logger.warning(f'API testing enabled?')
+        # if not self.r_params["testing_enabled"]:
+        #     raise tornado.web.HTTPError(404)
+
+        # task = self.get_task(task_name)
+        # if task is None:
+        #     raise tornado.web.HTTPError(404)
+
+
+        # logger.warning(f'Task?')
+        # try:
+        #     user_test = accept_user_test(
+        #         self.sql_session, self.service.file_cacher, self.current_user,
+        #         task, self.timestamp, self.request.files,
+        #         self.get_argument("language", None))
+        #     self.sql_session.commit()
+        # except TestingNotAllowed:
+        #     logger.warning("User %s tried to make test on task %s.",
+        #                    self.current_user.user.username, task_name)
+        #     raise tornado.web.HTTPError(404)
+        # except UnacceptableUserTest as e:
+        #     logger.info("Sent error: `%s' - `%s'", e.subject, e.formatted_text)
+        #     self.notify_error(e.subject, e.text, e.text_params)
+        # else:
+        #     self.service.evaluation_service.new_user_test(
+        #         user_test_id=user_test.id)
+        #     self.notify_success(N_("Test received"),
+        #                         N_("Your test has been received "
+        #                            "and is currently being executed."))
+        #     logger.info(
+        #         f'API test submission accepted: ID {user_test_id}')
+        #     self.json({'id': str(user_test_id)})
+
+        

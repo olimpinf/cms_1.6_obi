@@ -333,6 +333,36 @@ class RemoteServiceServer(RemoteServiceBase):
 
         self.pending_incoming_requests_threads = WeakSet()
 
+    # ranido-begin
+    def _connect(self):
+        """Establish a connection and initialize that socket.
+
+        """
+        try:
+            # Try to resolve the address, this can lead to many possible
+            # addresses, we'll try all of them.
+            addresses = gevent.socket.getaddrinfo(
+                self.remote_address.ip,
+                self.remote_address.port,
+                type=socket.SOCK_STREAM)
+        except socket.gaierror:
+            logger.warning("Cannot resolve %s.", self.remote_address)
+            raise
+
+        for family, type, proto, _canonname, sockaddr in addresses:
+            try:
+                host, port, *rest = sockaddr
+                logger.debug("Trying to connect to %s at port %d.", host, port)
+                sock = gevent.socket.socket(family, type, proto)
+                sock.connect(sockaddr)
+            except OSError as error:
+                logger.debug("Couldn't connect to %s at %s port %d: %s.",
+                             self._repr_remote(), host, port, error)
+            else:
+                self.initialize(sock, self.remote_service_coord)
+                break
+    # ranido-end
+        
     def finalize(self, reason=""):
         """See RemoteServiceBase.finalize."""
         super().finalize(reason)
