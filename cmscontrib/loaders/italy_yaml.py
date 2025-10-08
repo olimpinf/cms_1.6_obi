@@ -174,6 +174,8 @@ class YamlLoader(ContestLoader, TaskLoader, UserLoader, TeamLoader):
         touch(os.path.join(self.path, ".import_error_contest"))
 
         args = {}
+        args["allowed_localizations"] = ["pt-BR",]
+        args["languages"] = ["C++20 / g++", "C11 / gcc", "Java / JDK", "Python 3 / CPython", ]
 
         # Contest information
         load(conf, args, ["name", "nome_breve"])

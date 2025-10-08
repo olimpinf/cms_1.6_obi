@@ -232,7 +232,6 @@ class LoginHandler(ContestHandler):
 
         try:
             # ranido-begin
-            #ip_address = ipaddress.ip_address(self.request.remote_ip)
             # sometimes your application will be behind a proxy, for example if
             # you use nginx and UWSGI and you will always get something like 127.0.0.1
             # for the remote IP. In this case you need to check the headers too
