@@ -534,7 +534,18 @@ class EvaluationService(TriggeredService[ESOperation, EvaluationExecutor]):
                                      "in the database.", object_id)
                         continue
                     object_result = object_.get_result_or_create(dataset)
-
+                    # ranido-begin
+                    logger.warning("********Evaluation")
+                    logger.warning(f"operation_results = {operation_results}")
+                    logger.warning(f"operation_results = {operation_results[0]}")
+                    logger.warning(f"operation_results = {operation_results[0][1]}")
+                    logger.warning(f"operation_results = {operation_results[0][1].job}")
+                    logger.warning("setting the error, fixed in EvaluationService")
+                    object_result.set_execution_stderr("the error")
+                    logger.warning("OK")
+                    # ranido-end
+                
+                
                 self.write_results_one_object_and_type(
                     session, object_result, operation_results)
 
@@ -542,7 +553,9 @@ class EvaluationService(TriggeredService[ESOperation, EvaluationExecutor]):
             session.commit()
 
             num_testcases_per_dataset = dict()
+                
             for type_, object_id, dataset_id, archive_sandbox in by_object_and_type.keys():
+
                 if type_ == ESOperation.EVALUATION:
                     if dataset_id not in num_testcases_per_dataset:
                         num_testcases_per_dataset[dataset_id] = session\
@@ -632,6 +645,9 @@ class EvaluationService(TriggeredService[ESOperation, EvaluationExecutor]):
         result: the result from the worker.
 
         """
+        # ranido-begin
+        logger.warning("writing to DB")
+        # ranido-end
         if operation.type_ == ESOperation.COMPILATION:
             if result.job_success:
                 result.job.to_submission(object_result)

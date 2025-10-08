@@ -650,12 +650,8 @@ class EvaluationJob(Job):
             executables=dict(submission_result.executables),
             input=testcase.input,
             output=testcase.output,
-            # ranido-begin
-            # time_limit=dataset.time_limit,
-            # memory_limit=dataset.memory_limit,
             time_limit=time_limit,
             memory_limit=memory_limit,
-            # ranido-end
             info=info
         )
 
@@ -758,6 +754,12 @@ class EvaluationJob(Job):
 
         ur.evaluation_text = self.text
         ur.set_evaluation_outcome()
+        # ranido-begin
+        logger.warning("setting execution_stderr in Job")
+        logger.warning(f"+++++++++++++++ plus = {self.plus}")
+        ur.execution_stderr = self.plus.get('execution_stderr')
+        logger.warning(f"set execution_stderr to {ur.execution_stderr}")
+        # ranido-end
         ur.execution_time = self.plus.get('execution_time')
         ur.execution_wall_clock_time = \
             self.plus.get('execution_wall_clock_time')

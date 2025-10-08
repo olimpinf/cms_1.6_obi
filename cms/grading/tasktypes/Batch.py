@@ -304,15 +304,6 @@ class Batch(TaskType):
         for filename, digest in files_to_get.items():
             sandbox.create_file_from_storage(filename, digest)
 
-        # Actually performs the execution
-        # ranido-begin
-        multiprocess = job.multithreaded_sandbox
-        try:
-            if language.name == 'Javascript':
-                multiprocess = True
-        except:
-            logger.warning('RANIDO FAILED setting multiprocess for javascript in Batch.py')
-        # ranido-end
         box_success, evaluation_success, stats = evaluation_step(
             sandbox,
             commands,

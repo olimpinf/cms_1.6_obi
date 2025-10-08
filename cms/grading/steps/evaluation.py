@@ -199,11 +199,6 @@ def evaluation_step_before_run(
         sandbox.address_space = memory_limit
     else:
         sandbox.address_space = None
-
-    # ranido-begin
-    # logger.info(f"*************** Setting sandbox memory_limit={memory_limit}.")
-    # logger.info(f"****************Setting sandbox address_space={sandbox.address_space}.")
-    # ranido-end
         
     # config.sandbox.max_file_size is in KiB
     sandbox.fsize = config.sandbox.max_file_size * 1024

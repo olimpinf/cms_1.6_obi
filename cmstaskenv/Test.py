@@ -154,8 +154,13 @@ def test_testcases(base_dir, solution, language, assume=None):
         last_status = status
         tasktype.evaluate(job, file_cacher)
         status = job.plus.get("exit_status")
+        # ranido-begin
+        # info.append((job.plus.get("execution_time"),
+        #              job.plus.get("execution_memory")))
         info.append((job.plus.get("execution_time"),
-                     job.plus.get("execution_memory")))
+                     job.plus.get("execution_memory"),
+                     job.plus.get("stderr_txt")))
+        # ranido-end
         points.append(float(job.outcome))
 
         # Avoid printing unneeded newline

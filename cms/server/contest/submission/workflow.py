@@ -339,8 +339,6 @@ def accept_user_test(
     assert task.contest is contest
 
 
-    logger.warning(f'in accept_user_test, language: [{language_name}]')
-    
     # Check whether the task is testable.
 
     task_type = task.active_dataset.task_type_object
@@ -403,8 +401,6 @@ def accept_user_test(
             N_("Invalid archive format!"),
             N_("The submitted archive could not be opened."))
 
-    logger.warning(f'in accept_user_test, 2')
-    
     try:
         files, language = match_files_and_language(
             received_files,
@@ -413,8 +409,6 @@ def accept_user_test(
             task.get_allowed_languages(),
         )
     except InvalidFilesOrLanguage as err:
-        logger.warning(f'in accept_user_test, 3')
-        logger.info(f'Test rejected: {err}')
         raise UnacceptableUserTest(
             N_("Invalid test format!"),
             N_("Please select the correct files."))
@@ -422,7 +416,6 @@ def accept_user_test(
     digests: dict[str, str] = dict()
     missing_codenames = required_codenames.difference(files.keys())
     if len(missing_codenames) > 0:
-        logger.warning(f'in accept_user_test, 4')
         if task.active_dataset.task_type_object.ALLOW_PARTIAL_SUBMISSION:
             if task.active_dataset.task_type_object.REUSE_PREVIOUS_SUBMISSION:
                 digests = fetch_file_digests_from_previous_submission(
@@ -438,8 +431,6 @@ def accept_user_test(
             N_("Invalid test format!"),
             N_("Please select the correct files."))
 
-    logger.warning(f'in accept_user_test, 4')
-    
     if any(
         len(content) > config.contest_web_server.max_submission_length
         for codename, content in files.items()
@@ -459,8 +450,6 @@ def accept_user_test(
             config.contest_web_server.max_input_length)
 
     # All checks done, submission accepted.
-    logger.warning(f'in accept_user_test, 5')
-
     if config.contest_web_server.tests_local_copy:
         try:
             store_local_copy(

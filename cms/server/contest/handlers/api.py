@@ -233,17 +233,20 @@ class ApiTestStatusHandler(ApiContestHandler):
         if task is None:
             raise tornado.web.HTTPError(404)
 
-        logger.warning(f"test opaque_id = {opaque_id}")
-        logger.warning(f"current user = {self.current_user.user_id}")
         user_test = self.do_get_user_test(task, opaque_id)
-        logger.warning(f"in test status, user_test = {user_test}")
-        
         if user_test is None:
             raise tornado.web.HTTPError(404)
 
         ur = user_test.get_result(task.active_dataset)
         data = dict()
 
+        # ranido-begin
+        #if ur.stderr_txt is not None:
+        #    data["stderr_txt"] = ur.stderr_txt
+        #else:
+        #    data["stderr_txt"] = None
+        data["execution_stderr"] = "Um erro, fixo, rever"
+        
         if ur is None:
             data["status"] = UserTestResult.COMPILING
         else:
@@ -258,7 +261,7 @@ class ApiTestStatusHandler(ApiContestHandler):
         elif data["status"] == UserTestResult.EVALUATING:
             data["status_text"] = self._("Executing...")
         elif data["status"] == UserTestResult.EVALUATED:
-            data["status_text"] = self._("Executed")
+            data["status_text"] = ur.evaluation_text
 
             if ur.execution_time is not None:
                 data["execution_time"] = \

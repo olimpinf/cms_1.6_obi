@@ -393,6 +393,12 @@ class UserTestResult(Base):
         ARRAY(String),
         nullable=True)
 
+    # ranido-begin
+    execution_stderr: str | None = Column(
+        String,
+        nullable=True)
+    # ranido-end
+    
     # These one-to-many relationships are the reversed directions of
     # the ones defined in the "child" classes using foreign keys.
 
@@ -524,6 +530,14 @@ class UserTestResult(Base):
 
         """
         self.evaluation_outcome = "ok"
+
+    # ranido-begin
+    def set_execution_stderr(self, error: str):
+        """Set the evaluation outcome (always ok now).
+
+        """
+        self.execution_stderr = error
+    # ranido-end
 
 
 class UserTestExecutable(Base):

@@ -417,6 +417,12 @@ class SubmissionResult(Base):
         ARRAY(String),
         nullable=True)
 
+    # ranido-begin
+    execution_stderr: str | None = Column(
+        String,
+        nullable=True)
+    # ranido-end
+    
     # These one-to-many relationships are the reversed directions of
     # the ones defined in the "child" classes using foreign keys.
 
@@ -637,6 +643,14 @@ class SubmissionResult(Base):
 
         """
         self.evaluation_outcome = "ok"
+
+    # ranido-begin
+    def set_execution_stderr(self, stderr_txt: str):
+        """Set the stderr_txt
+
+        """
+        self.execution_stderr = stderr_txt
+    # ranido-end
 
 
 class Executable(Base):

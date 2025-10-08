@@ -188,7 +188,7 @@ class UserTestStatusHandler(ContestHandler):
             data["status"] = UserTestResult.COMPILING
         else:
             data["status"] = ur.get_status()
-
+            
         if data["status"] == UserTestResult.COMPILING:
             data["status_text"] = self._("Compiling...")
         elif data["status"] == UserTestResult.COMPILATION_FAILED:
@@ -214,6 +214,7 @@ class UserTestStatusHandler(ContestHandler):
 
             data["output"] = ur.output is not None
 
+            
         self.write(data)
 
 

@@ -71,8 +71,27 @@ def execution_stats(sandbox: Sandbox, collect_output: bool = False) -> StatsDict
             s = s.strip()
             return s
         stats["stdout"] = safe_get_str(sandbox.stdout_file)
-        stats["stderr"] = safe_get_str(sandbox.stderr_file)
 
+    #ranido-begin
+        # stats["stderr"] = safe_get_str(sandbox.stderr_file)
+    # always collect stderr
+    if True:
+        def safe_get_str(filename: str) -> str:
+            s = sandbox.get_file_to_string(filename)
+            s = s.decode("utf-8", errors="replace")
+            s = re.sub('[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xbf]', '\ufffd', s)
+            s = s.strip()
+            return s
+        if sandbox.stderr_file:
+            stderr_filename = sandbox.stderr_file
+        else:
+            stderr_filename = "stderr.txt"
+        stats["stderr_txt"] = safe_get_str(sandbox.stderr_file)
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"stderr: {stats['stderr_txt']}")
+    # ranido-end
+    
     return stats
 
 
