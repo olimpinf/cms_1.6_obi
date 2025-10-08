@@ -487,7 +487,8 @@ class CompilationJob(Job):
         ur.set_compilation_outcome(self.compilation_success)
         ur.compilation_text = self.text
         ur.compilation_stdout = self.plus.get('stdout')
-        ur.compilation_stderr = self.plus.get('stderr')
+        ur.compilation_stderr = self.plus.get('execution_stderr')
+
         ur.compilation_time = self.plus.get('execution_time')
         ur.compilation_wall_clock_time = \
             self.plus.get('execution_wall_clock_time')

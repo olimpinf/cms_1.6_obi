@@ -240,13 +240,6 @@ class ApiTestStatusHandler(ApiContestHandler):
         ur = user_test.get_result(task.active_dataset)
         data = dict()
 
-        # ranido-begin
-        #if ur.stderr_txt is not None:
-        #    data["stderr_txt"] = ur.stderr_txt
-        #else:
-        #    data["stderr_txt"] = None
-        data["execution_stderr"] = "Um erro, fixo, rever"
-        
         if ur is None:
             data["status"] = UserTestResult.COMPILING
         else:

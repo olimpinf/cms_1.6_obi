@@ -634,9 +634,7 @@ class EvaluationService(TriggeredService[ESOperation, EvaluationExecutor]):
         result: the result from the worker.
 
         """
-        # ranido-begin
-        logger.warning("writing to DB")
-        # ranido-end
+
         if operation.type_ == ESOperation.COMPILATION:
             if result.job_success:
                 result.job.to_submission(object_result)

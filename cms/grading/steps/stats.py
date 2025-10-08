@@ -87,8 +87,6 @@ def execution_stats(sandbox: Sandbox, collect_output: bool = False) -> StatsDict
         else:
             stderr_filename = "stderr.txt"
         stats["execution_stderr"] = safe_get_str(sandbox.stderr_file)
-        import logging
-        logger = logging.getLogger(__name__)
     # ranido-end
     
     return stats

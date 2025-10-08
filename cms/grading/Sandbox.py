@@ -979,11 +979,6 @@ class IsolateSandbox(SandboxBase):
         # symlink to one out of many alternatives.
         self.maybe_add_mapped_directory("/etc/alternatives")
 
-        # ranido-begin
-        # for javascript
-        self.maybe_add_mapped_directory("/usr/local/lib/node_modules", options="noexec")
-        # ranido-end
-        
         # Likewise, needed by C# programs. The Mono runtime looks in
         # /etc/mono/config to obtain the default DllMap, which includes, in
         # particular, the System.Native assembly.
