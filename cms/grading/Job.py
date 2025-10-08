@@ -635,8 +635,6 @@ class EvaluationJob(Job):
             memory_limit = dataset.memory_limit_lang[submission.language]
         except:
             memory_limit = dataset.memory_limit
-        # logger.info("using time_limit = %s, memory_limit = %s for %s",time_limit,memory_limit,submission.language)
-        # ranido-end
 
         return EvaluationJob(
             operation=operation,
@@ -755,10 +753,7 @@ class EvaluationJob(Job):
         ur.evaluation_text = self.text
         ur.set_evaluation_outcome()
         # ranido-begin
-        logger.warning("setting execution_stderr in Job")
-        logger.warning(f"+++++++++++++++ plus = {self.plus}")
         ur.execution_stderr = self.plus.get('execution_stderr')
-        logger.warning(f"set execution_stderr to {ur.execution_stderr}")
         # ranido-end
         ur.execution_time = self.plus.get('execution_time')
         ur.execution_wall_clock_time = \

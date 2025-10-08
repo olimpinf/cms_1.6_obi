@@ -159,7 +159,7 @@ def test_testcases(base_dir, solution, language, assume=None):
         #              job.plus.get("execution_memory")))
         info.append((job.plus.get("execution_time"),
                      job.plus.get("execution_memory"),
-                     job.plus.get("stderr_txt")))
+                     job.plus.get("execution_stderr")))
         # ranido-end
         points.append(float(job.outcome))
 

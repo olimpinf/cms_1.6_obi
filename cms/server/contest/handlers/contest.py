@@ -319,7 +319,6 @@ class ContestHandler(BaseHandler):
             in contestant on the given task (None if not found).
 
         """
-        logger.warning(f"do_get_user_test")
         
         return self.sql_session.query(UserTest) \
             .filter(UserTest.task == task) \

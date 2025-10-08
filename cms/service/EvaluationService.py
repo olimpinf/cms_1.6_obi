@@ -533,18 +533,7 @@ class EvaluationService(TriggeredService[ESOperation, EvaluationExecutor]):
                         logger.error("Could not find user test %d "
                                      "in the database.", object_id)
                         continue
-                    object_result = object_.get_result_or_create(dataset)
-                    # ranido-begin
-                    logger.warning("********Evaluation")
-                    logger.warning(f"operation_results = {operation_results}")
-                    logger.warning(f"operation_results = {operation_results[0]}")
-                    logger.warning(f"operation_results = {operation_results[0][1]}")
-                    logger.warning(f"operation_results = {operation_results[0][1].job}")
-                    logger.warning("setting the error, fixed in EvaluationService")
-                    object_result.set_execution_stderr("the error")
-                    logger.warning("OK")
-                    # ranido-end
-                
+                    object_result = object_.get_result_or_create(dataset)                
                 
                 self.write_results_one_object_and_type(
                     session, object_result, operation_results)

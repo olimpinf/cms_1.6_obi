@@ -261,7 +261,9 @@ class ApiTestStatusHandler(ApiContestHandler):
         elif data["status"] == UserTestResult.EVALUATING:
             data["status_text"] = self._("Executing...")
         elif data["status"] == UserTestResult.EVALUATED:
+
             data["status_text"] = ur.evaluation_text
+            data["execution_stderr"] = ur.execution_stderr
 
             if ur.execution_time is not None:
                 data["execution_time"] = \
@@ -276,7 +278,6 @@ class ApiTestStatusHandler(ApiContestHandler):
                 data["memory"] = None
 
             digest = ur.output
-            logger.warning(f"digest = {digest}")
             try:
                 output = self.service.file_cacher.get_file_content(digest).decode('utf-8')
             except:
