@@ -1158,13 +1158,7 @@ class IsolateSandbox(SandboxBase):
             res += ["--stack=%d" % (self.stack_space // 1024)]
         if self.address_space is not None:
             # Isolate wants memory size as KiB.
-            # ranido-begin
             res += ["--cg-mem=%d" % (self.address_space // 1024)]
-            #if self.cgroup:
-            #    res += ["--cg-mem=%d" % (self.address_space // 1024)]
-            #else:
-            #    res += ["--mem=%d" % (self.address_space // 1024)]
-            # ranido-end
         if self.stdout_file is not None:
             res += ["--stdout=%s" % self.inner_absolute_path(self.stdout_file)]
         if self.max_processes is not None:

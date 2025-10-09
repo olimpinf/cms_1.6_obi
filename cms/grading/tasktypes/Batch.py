@@ -327,7 +327,13 @@ class Batch(TaskType):
             outcome = 0.0
             text = human_evaluation_message(stats)
             if job.get_output:
-                job.user_output = None
+                # ranido-begin
+                #job.user_output = None
+                job.user_output = sandbox.get_file_to_storage(
+                    self._actual_output,
+                    "Output file in job %s" % job.info,
+                    trunc_len=100 * 1024)
+                # ranido-end
 
         # Otherwise, advance to checking the solution
         else:

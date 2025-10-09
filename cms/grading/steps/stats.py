@@ -72,9 +72,6 @@ def execution_stats(sandbox: Sandbox, collect_output: bool = False) -> StatsDict
             return s
         stats["stdout"] = safe_get_str(sandbox.stdout_file)
 
-    #ranido-begin
-        # stats["stderr"] = safe_get_str(sandbox.stderr_file)
-    # always collect stderr
     if True:
         def safe_get_str(filename: str) -> str:
             s = sandbox.get_file_to_string(filename)
@@ -87,6 +84,7 @@ def execution_stats(sandbox: Sandbox, collect_output: bool = False) -> StatsDict
         else:
             stderr_filename = "stderr.txt"
         stats["execution_stderr"] = safe_get_str(sandbox.stderr_file)
+        stats["stdout"] = safe_get_str(sandbox.stdout_file)
     # ranido-end
     
     return stats
