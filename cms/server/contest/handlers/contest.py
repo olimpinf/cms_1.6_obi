@@ -168,16 +168,7 @@ class ContestHandler(BaseHandler):
                                                                    cookie_name, authorization_header)
 
         try:
-            # ranido-begin
-            # sometimes your application will be behind a proxy, for example if
-            # you use nginx and UWSGI and you will always get something like 127.0.0.1
-            # for the remote IP. In this case you need to check the headers too
-            #ip_address = ipaddress.ip_address(self.request.remote_ip)
-            real_ip = self.request.headers.get("X-Real-IP") or \
-                self.request.headers.get("X-Forwarded-For") or \
-                self.request.remote_ip
-            ip_address = ipaddress.ip_address(str(real_ip))
-            # ranido-end
+            ip_address = ipaddress.ip_address(self.request.remote_ip)
         except ValueError:
             logger.warning("Invalid IP address provided by Tornado: %s",
                            self.request.remote_ip)
