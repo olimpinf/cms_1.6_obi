@@ -168,6 +168,9 @@ class ContestHandler(BaseHandler):
                                                                    cookie_name, authorization_header)
 
         try:
+            # ranido-begin
+            #logger.warning("IP address provided by Tornado: {self.request.remote_ip}"
+            # ranido-end
             ip_address = ipaddress.ip_address(self.request.remote_ip)
         except ValueError:
             logger.warning("Invalid IP address provided by Tornado: %s",

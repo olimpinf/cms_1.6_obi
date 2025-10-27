@@ -69,6 +69,9 @@ class ApiLoginHandler(ApiContestHandler):
             return
 
         try:
+            # ranido-begin
+            #logger.warning("IP address provided by Tornado: {self.request.remote_ip}"
+            # ranido-end
             ip_address = ipaddress.ip_address(self.request.remote_ip)
         except ValueError:
             logger.warning("Invalid IP address provided by Tornado: %s",
@@ -194,8 +197,6 @@ class ApiTestHandler(ApiContestHandler):
             raise tornado.web.HTTPError(404)
 
         query_args = dict()
-        logger.warning('API submission received')
-        logger.warning(f'language: {self.get_argument("language", None)}')
 
         try:
             user_test = accept_user_test(
