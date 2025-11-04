@@ -56,8 +56,128 @@ if typing.TYPE_CHECKING:
     from cms.server.contest.server import ContestWebServer
 
 
+# ranido-begin
+import hmac
+import hashlib
+import base64
+import time
+import re
+# ranido-end
+
 logger = logging.getLogger(__name__)
 
+
+# ranido-begin
+UA_SECRET = "1hrs5g1qs@svr-o(-3atjnz8evwmake03kyjwute023mdeu" # same as in django.settings
+UA_MAX_AGE_SECONDS = 6*3600  # User-Agent valid for 6 hours
+UA_VALIDATION_ENABLED = True
+
+def b64url_no_pad_decode(s: str) -> bytes:
+    """
+    Decode base64url without padding (inverse of b64url_no_pad from Django).
+    """
+    # Add padding if needed
+    padding = 4 - (len(s) % 4)
+    if padding != 4:
+        s += '=' * padding
+    
+    # Replace URL-safe chars with standard base64 chars
+    s = s.replace('-', '+').replace('_', '/')
+    
+    return base64.b64decode(s)
+
+
+def parse_exam_ua(ua_string: str) -> dict | None:
+    """
+    Parse the ExamKit User-Agent string.
+    
+    Format: ExamKit/1 id=CONTESTANT ts=TIMESTAMP nonce=NONCE sig=SIGNATURE
+    
+    Returns:
+        dict with keys: id, ts, nonce, sig
+        None if parsing fails
+    """
+    if not ua_string or "ExamKit" not in ua_string:
+        return None
+    
+    try:
+        # Parse using regex
+        pattern = r'ExamKit/1\s+id=([^\s]+)\s+ts=(\d+)\s+nonce=([^\s]+)\s+sig=([^\s]+)'
+        match = re.match(pattern, ua_string)
+        
+        if not match:
+            return None
+        
+        return {
+            'id': match.group(1),
+            'ts': int(match.group(2)),
+            'nonce': match.group(3),
+            'sig': match.group(4)
+        }
+    except Exception as e:
+        logger.warning(f"Failed to parse User-Agent: {e}")
+        return None
+
+
+def verify_exam_ua(ua_string: str) -> tuple[bool, str, dict | None]:
+    """
+    Verify the ExamKit User-Agent signature and timestamp.
+    
+    Returns:
+        (valid: bool, error_message: str, parsed_data: dict | None)
+    """
+    if not UA_VALIDATION_ENABLED:
+        logger.debug("User-Agent validation is disabled")
+        return True, "", None
+    
+    if not UA_SECRET:
+        logger.error("UA_SECRET not configured - cannot validate User-Agent")
+        return False, "Server configuration error", None
+    
+    # Parse the User-Agent
+    parsed = parse_exam_ua(ua_string)
+    if not parsed:
+        logger.warning(f"Invalid User-Agent format: {ua_string[:100]}")
+        return False, "Invalid User-Agent format", None
+    
+    contestant_id = parsed['id']
+    ts = parsed['ts']
+    nonce = parsed['nonce']
+    sig_received = parsed['sig']
+    
+    # Check timestamp freshness
+    now = int(time.time())
+    age = now - ts
+    
+    if age < 0:
+        logger.warning(f"User-Agent from future for {contestant_id}: ts={ts}, now={now}")
+        return False, "User-Agent timestamp is in the future", parsed
+    
+    if age > UA_MAX_AGE_SECONDS:
+        logger.warning(f"Expired User-Agent for {contestant_id}: age={age}s (max={UA_MAX_AGE_SECONDS}s)")
+        return False, f"User-Agent expired (age: {age}s)", parsed
+    
+    # Reconstruct the payload and verify signature
+    payload = f"{contestant_id}|{ts}|{nonce}".encode("utf-8")
+    
+    try:
+        mac = hmac.new(UA_SECRET.encode("utf-8"), payload, hashlib.sha256).digest()
+        # Encode to base64url without padding (same as Django side)
+        sig_computed = base64.urlsafe_b64encode(mac).decode('ascii').rstrip('=')
+        
+        # Constant-time comparison
+        if not hmac.compare_digest(sig_computed, sig_received):
+            logger.warning(f"Invalid User-Agent signature for {contestant_id}")
+            return False, "Invalid User-Agent signature", parsed
+        
+    except Exception as e:
+        logger.error(f"Error verifying User-Agent signature: {e}")
+        return False, "Signature verification error", parsed
+    
+    logger.debug(f"Valid User-Agent for contestant {contestant_id}")
+    return True, "", parsed
+
+# ranido-end
 
 class BaseHandler(CommonRequestHandler):
     """Base RequestHandler for this application.
@@ -86,6 +206,12 @@ class BaseHandler(CommonRequestHandler):
         # Is this a request on an API endpoint?
         self.api_request = False
 
+        # ranido-begin
+        # User-Agent validation data
+        self.ua_validated = False
+        self.ua_contestant_id = None
+        # ranido-end
+
     def render(self, template_name, **params):
         t = self.service.jinja2_environment.get_template(template_name)
         for chunk in t.generate(**params):
@@ -97,6 +223,38 @@ class BaseHandler(CommonRequestHandler):
         """
         super().prepare()
         self.setup_locale()
+
+        # ranido-begin
+        # Validate User-Agent for all requests
+        self.validate_user_agent()
+        # ranido-end
+
+    # ranido-begin
+    def validate_user_agent(self):
+        """
+        Validate the User-Agent header and reject invalid requests.
+        """
+        # Get User-Agent header
+        ua_string = self.request.headers.get("User-Agent", "")
+        
+        # Verify the User-Agent
+        valid, error_msg, parsed_data = verify_exam_ua(ua_string)
+        
+        if not valid:
+            logger.warning(
+                f"Rejected request from {self.request.remote_ip}: {error_msg}"
+            )
+            # Return 404 Not Found
+            raise tornado.web.HTTPError(404)
+        
+        # Store validated data for use in handlers
+        if parsed_data:
+            self.ua_validated = True
+            self.ua_contestant_id = parsed_data['id']
+            logger.debug(
+                f"Validated User-Agent for contestant {self.ua_contestant_id} "
+            )    
+    # ranido-end
 
     def setup_locale(self):
         lang_codes = list(self.available_translations.keys())
@@ -152,6 +310,12 @@ class BaseHandler(CommonRequestHandler):
 
         ret["xsrf_form_html"] = self.xsrf_form_html()
 
+        # ranido-begin
+        # Add User-Agent validation data to render params
+        ret["ua_validated"] = self.ua_validated
+        ret["ua_contestant_id"] = self.ua_contestant_id
+        # ranido-end
+        
         return ret
 
     def write_error(self, status_code, **kwargs):
@@ -169,7 +333,10 @@ class BaseHandler(CommonRequestHandler):
         if self.r_params is not None:
             self.render("error.html", status_code=status_code, **self.r_params)
         else:
-            self.write("A critical error has occurred :-(")
+            # ranido-begin
+            self.write("Acesso indevido.")
+            #self.write("A critical error has occurred :-(")
+            # ranido-end
             self.finish()
 
     def is_multi_contest(self):
