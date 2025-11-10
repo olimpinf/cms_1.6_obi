@@ -67,10 +67,13 @@ $(document).ready(function () {
 {% endif %}
 ranido-end #}		    
 {% if participation is defined %}
-                    <form action="{{ contest_url("logout") }}" method="POST" class="navbar-form pull-right">
+{# ranido-begin #}
+{#                    <form action="{{ contest_url("logout") }}" method="POST" class="navbar-form pull-right">
                         {{ xsrf_form_html|safe }}
                         <button type="submit" class="btn btn-warning">{% trans %}Logout{% endtrans %}</button>
                     </form>
+#}
+{# ranido-end #}
                     <p class="navbar-text pull-right">
                         {% trans first_name=user.first_name,
                                  last_name=user.last_name,

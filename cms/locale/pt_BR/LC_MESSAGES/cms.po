@@ -720,7 +720,7 @@ msgid ""
 "Every user is allowed to compete (i.e. submit solutions) for a uninterrupted"
 " time frame of %(per_user_time)s."
 msgstr ""
-"Cada competidor(a) pode competir (isto é, submeter soluções) por um período de "
+"Cada competidor(a) pode realizar a prova (isto é, submeter soluções) por um período de "
 "tempo ininterrupto de %(per_user_time)s."
 
 msgid "As soon as the contest starts you can choose to start your time frame."
@@ -981,7 +981,7 @@ msgid "submission.zip"
 msgstr "submissao.zip"
 
 msgid "Previous submissions"
-msgstr "Submissões anteriores"
+msgstr "Submissões realizadas"
 
 msgid "Tokens are not allowed on this task."
 msgstr "Fichas não são permitidas nesta tarefa."
