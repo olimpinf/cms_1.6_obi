@@ -31,8 +31,19 @@
 {% elif task.statements|length == 1 %}
 <div class="row statement one_statement">
     <div class="span9">
-    {% for lang_code in task.statements %}
-        <a href="{{ statement_url(lang_code) }}" target="_blank" class="btn btn-large btn-success">{% trans %}Download task statement{% endtrans %}</a>
+      {% for lang_code in task.statements %}
+      {# ranido-begin #}
+      <div class="task-statement-viewer">
+        {# <a href="{{ statement_url(lang_code) }}" target="_blank" class="btn btn-large btn-success">{% trans %}Download task statement{% endtrans %}</a> #}
+	<object
+	  data="{{ statement_url(lang_code) }}"
+	  type="application/pdf"
+	  width="100%"
+	  height="900"
+	  >
+	</object>
+      </div>
+      {# ranido-end #}
     {% endfor %}
     </div>
 </div>
