@@ -106,6 +106,8 @@ class ApiTaskListHandler(ApiContestHandler):
         contest = self.contest
         tasks = []
         for task in contest.tasks:
+            if task_name in ("tarefa", "hashedName-d8724aa0b88f985f11"):
+                continue
             name = task.name
             statements = [s for s in task.statements]
             sub_format = task.submission_format

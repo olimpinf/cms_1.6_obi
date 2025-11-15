@@ -189,6 +189,10 @@ ranido-end #}
                             </li>
     {% if actual_phase >= 0 or participation.unrestricted %}
         {% for t_iter in contest.tasks %}
+        {# ranido-begin #}
+        {% if t_iter.name != "tarefa" and t_iter.name != "hashedName-d8724aa0b88f985f11" %}
+        {# ranido-end #}
+
                             <li class="nav-header">
                                 {{ t_iter.name }}
                             </li>
@@ -198,6 +202,9 @@ ranido-end #}
                             <li{% if page == "task_submissions" and task == t_iter %} class="active"{% endif %}>
                                 <a href="{{ contest_url("tasks", t_iter.name, "submissions") }}">{% trans %}Submissions{% endtrans %}</a>
                             </li>
+        {# ranido-begin #}
+        {% endif %}
+        {# ranido-end #}
         {% endfor %}
     {% endif %}
                             <li class="divider"></li>
