@@ -178,8 +178,11 @@
             <input type="hidden" name="next" value="{{ contest_url() }}">
 
 	    {# ranido-begin #}
+	    {#
             <button type="submit" class="btn btn-danger btn-large" style="width:100%;-moz-box-sizing:border-box;box-sizing:border-box;" type="submit" onclick="alert('Eu atesto que estou fazendo a prova na escola, sob supervisão, e que não usarei ferramentas de inteligência artificial nem consultarei a internet para tentar resolver as tarefas. Entendo que a violação das regras da OBI implicará na minha desclassificação.')">{% trans %}Start!{% endtrans %}</button>
+	    #}
 	    {# ranido-end #}
+            <button type="submit" class="btn btn-danger btn-large" style="width:100%;-moz-box-sizing:border-box;box-sizing:border-box;" type="submit">{% trans %}Start!{% endtrans %}</button>
         </form>
     {% endif %}
 
@@ -217,6 +220,9 @@
     </thead>
     <tbody>
 {% for t_iter in contest.tasks %}
+    {# ranido-begin #}
+    {% if t_iter.name != "tarefa" and t_iter.name != "hashedName-d8724aa0b88f985f11" %}
+    {# ranido-end #}
         {% set task_allowed_languages = t_iter.get_allowed_languages() %}
         {% set extensions = "[%s]"|format(task_allowed_languages|map("to_language")|map(attribute="source_extension")|unique|join("|")) %}
         <tr>
@@ -248,6 +254,9 @@
             </td>
     {% endif %}
         </tr>
+    {# ranido-begin #}
+    {% endif %}
+    {# ranido-end #}
 {% endfor %}
     </tbody>
 </table>
