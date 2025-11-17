@@ -117,7 +117,7 @@
 }
 
 /* Optional: uncomment to see text alignment for debugging */
-#text-layer > span, #text-layer > div {
+/* #text-layer > span, #text-layer > div {
   color: red !important;
   opacity: 0.3 !important;
 }
@@ -129,6 +129,7 @@
 #text-layer ::-moz-selection {
   background: rgba(0, 100, 255, 0.4);
 }
+*/
 </style>
 <script>
   // Set worker source
@@ -149,14 +150,14 @@
   const canvasContainer = document.getElementById('canvas-container');
 
   function renderPage(num) {
-      console.log('[PDF] Rendering page', num, 'at scale', scale);
+      //console.log('[PDF] Rendering page', num, 'at scale', scale);
       pageRendering = true;
       
       pdfDoc.getPage(num).then(function(page) {
-	  console.log('[PDF] Page loaded, calculating viewport');
+	  //console.log('[PDF] Page loaded, calculating viewport');
 	  const viewport = page.getViewport({scale: scale});
 	  
-	  console.log('[PDF] Viewport size:', viewport.width, 'x', viewport.height);
+	  //console.log('[PDF] Viewport size:', viewport.width, 'x', viewport.height);
 	  
 	  // Set canvas dimensions
 	  canvas.height = viewport.height;
@@ -170,11 +171,11 @@
 	      viewport: viewport
 	  };
 	  
-	  console.log('[PDF] Starting render task');
+	  //console.log('[PDF] Starting render task');
 	  const renderTask = page.render(renderContext);
 
 	  renderTask.promise.then(function() {
-	      console.log('[PDF] Render complete, now rendering text layer');
+	      //console.log('[PDF] Render complete, now rendering text layer');
 	      
 	      // Render text layer for selection/copying
 	      return page.getTextContent({
@@ -211,11 +212,11 @@
 		      return Promise.resolve();
 		  })
 	      ]).then(function() {
-		  console.log('[PDF] Text layer and fonts rendered successfully');
+		  //console.log('[PDF] Text layer and fonts rendered successfully');
 		  pageRendering = false;
 		  
 		  if (pageNumPending !== null) {
-		      console.log('[PDF] Rendering pending page', pageNumPending);
+		      //console.log('[PDF] Rendering pending page', pageNumPending);
 		      renderPage(pageNumPending);
 		      pageNumPending = null;
 		  }
@@ -238,7 +239,7 @@
   }
   
   function queueRenderPage(num) {
-    console.log('[PDF] Queue render page', num, 'currently rendering:', pageRendering);
+    //console.log('[PDF] Queue render page', num, 'currently rendering:', pageRendering);
     if (pageRendering) {
       pageNumPending = num;
     } else {
@@ -249,7 +250,7 @@
   function updateZoomDisplay() {
     const zoomPercent = Math.round(scale * 100);
     document.getElementById('zoom-level').textContent = zoomPercent + '%';
-    console.log('[PDF] Zoom display updated:', zoomPercent + '%');
+    //console.log('[PDF] Zoom display updated:', zoomPercent + '%');
   }
 
   // Page navigation
@@ -267,40 +268,40 @@
 
   // Zoom functions
   function zoomIn() {
-    console.log('[PDF] Zoom in - current scale:', scale);
+    //console.log('[PDF] Zoom in - current scale:', scale);
     const oldScale = scale;
     scale = Math.min(scale + 0.25, 5.0);
-    console.log('[PDF] New scale:', scale);
+    //console.log('[PDF] New scale:', scale);
     if (scale !== oldScale) {
       queueRenderPage(pageNum);
     }
   }
 
   function zoomOut() {
-    console.log('[PDF] Zoom out - current scale:', scale);
+    //console.log('[PDF] Zoom out - current scale:', scale);
     const oldScale = scale;
     scale = Math.max(scale - 0.25, 0.25);
-    console.log('[PDF] New scale:', scale);
+    //console.log('[PDF] New scale:', scale);
     if (scale !== oldScale) {
       queueRenderPage(pageNum);
     }
   }
 
   function zoomReset() {
-    console.log('[PDF] Zoom reset');
+    //console.log('[PDF] Zoom reset');
     scale = 1.0;
     queueRenderPage(pageNum);
   }
 
   function zoomFitWidth() {
-    console.log('[PDF] Zoom fit width');
+    //console.log('[PDF] Zoom fit width');
     if (!pdfDoc) return;
     
     pdfDoc.getPage(pageNum).then(function(page) {
       const viewport = page.getViewport({scale: 1.0});
       const containerWidth = canvasContainer.clientWidth - 40;
       scale = containerWidth / viewport.width;
-      console.log('[PDF] Calculated fit-width scale:', scale);
+      //console.log('[PDF] Calculated fit-width scale:', scale);
       queueRenderPage(pageNum);
     }).catch(function(error) {
       console.error('[PDF] Error in zoomFitWidth:', error);
@@ -308,7 +309,7 @@
   }
 
   function zoomFitPage() {
-    console.log('[PDF] Zoom fit page');
+    //console.log('[PDF] Zoom fit page');
     if (!pdfDoc) return;
     
     pdfDoc.getPage(pageNum).then(function(page) {
@@ -318,7 +319,7 @@
       const scaleWidth = containerWidth / viewport.width;
       const scaleHeight = containerHeight / viewport.height;
       scale = Math.min(scaleWidth, scaleHeight);
-      console.log('[PDF] Calculated fit-page scale:', scale);
+      //console.log('[PDF] Calculated fit-page scale:', scale);
       queueRenderPage(pageNum);
     }).catch(function(error) {
       console.error('[PDF] Error in zoomFitPage:', error);
@@ -327,31 +328,31 @@
 
   // Event listeners
   document.getElementById('prev-page').addEventListener('click', function(e) {
-    console.log('[PDF] Prev button clicked');
+    //console.log('[PDF] Prev button clicked');
     e.preventDefault();
     onPrevPage();
   });
   
   document.getElementById('next-page').addEventListener('click', function(e) {
-    console.log('[PDF] Next button clicked');
+    //console.log('[PDF] Next button clicked');
     e.preventDefault();
     onNextPage();
   });
   
   document.getElementById('zoom-in').addEventListener('click', function(e) {
-    console.log('[PDF] Zoom in button clicked');
+    //console.log('[PDF] Zoom in button clicked');
     e.preventDefault();
     zoomIn();
   });
   
   document.getElementById('zoom-out').addEventListener('click', function(e) {
-    console.log('[PDF] Zoom out button clicked');
+    //console.log('[PDF] Zoom out button clicked');
     e.preventDefault();
     zoomOut();
   });
   
   document.getElementById('zoom-fit-width').addEventListener('click', function(e) {
-    console.log('[PDF] Fit width button clicked');
+    //console.log('[PDF] Fit width button clicked');
     e.preventDefault();
     zoomFitWidth();
   });
@@ -390,7 +391,7 @@
 
 // Load PDF
 const pdfUrl = '{{ statement_url(lang_code) }}';
-console.log('[PDF] Loading PDF from:', pdfUrl);
+//console.log('[PDF] Loading PDF from:', pdfUrl);
 
 const loadingTask = pdfjsLib.getDocument({
   url: pdfUrl,
@@ -404,7 +405,7 @@ const loadingTask = pdfjsLib.getDocument({
 
 // Use loadingTask.promise instead of calling getDocument again!
 loadingTask.promise.then(function(pdfDoc_) {
-  console.log('[PDF] PDF loaded successfully, pages:', pdfDoc_.numPages);
+  //console.log('[PDF] PDF loaded successfully, pages:', pdfDoc_.numPages);
   pdfDoc = pdfDoc_;
   document.getElementById('page-count').textContent = pdfDoc.numPages;
   
@@ -423,7 +424,7 @@ loadingTask.promise.then(function(pdfDoc_) {
     
     // Render the first page
     page.render(renderContext).promise.then(function() {
-      console.log('[PDF] Initial render complete, now applying fit-to-width');
+      //console.log('[PDF] Initial render complete, now applying fit-to-width');
       
       // Wait for next animation frame to ensure layout is complete
       requestAnimationFrame(function() {
@@ -431,8 +432,8 @@ loadingTask.promise.then(function(pdfDoc_) {
           const containerWidth = canvasContainer.clientWidth;
           const containerHeight = canvasContainer.clientHeight;
           
-          console.log('[PDF] Container dimensions:', containerWidth, 'x', containerHeight);
-          console.log('[PDF] Canvas dimensions:', canvas.width, 'x', canvas.height);
+          //console.log('[PDF] Container dimensions:', containerWidth, 'x', containerHeight);
+          //console.log('[PDF] Canvas dimensions:', canvas.width, 'x', canvas.height);
           
           if (containerWidth > 0 && containerHeight > 0) {
             zoomFitWidth();
