@@ -127,7 +127,7 @@ def verify_exam_ua(ua_string: str) -> tuple[bool, str, dict | None]:
         (valid: bool, error_message: str, parsed_data: dict | None)
     """
     if not UA_VALIDATION_ENABLED:
-        logger.debug("User-Agent validation is disabled")
+        logger.warning("User-Agent validation is disabled")
         return True, "", None
     
     if not UA_SECRET:
@@ -251,7 +251,7 @@ class BaseHandler(CommonRequestHandler):
         if parsed_data:
             self.ua_validated = True
             self.ua_contestant_id = parsed_data['id']
-            logger.debug(
+            logger.warning(
                 f"Validated User-Agent for contestant {self.ua_contestant_id} "
             )    
     # ranido-end
