@@ -721,6 +721,17 @@ class EvaluationJob(Job):
                     managers[manager_filename] = \
                         dataset.managers[manager_filename]
 
+        # ranido-begin: use per-language limits when configured (same as from_submission)
+        try:
+            time_limit = dataset.time_limit_lang[user_test.language]
+        except:
+            time_limit = dataset.time_limit
+        try:
+            memory_limit = dataset.memory_limit_lang[user_test.language]
+        except:
+            memory_limit = dataset.memory_limit
+        # ranido-end
+
         return EvaluationJob(
             operation=operation,
             task_type=dataset.task_type,
@@ -732,8 +743,8 @@ class EvaluationJob(Job):
             managers=managers,
             executables=dict(user_test_result.executables),
             input=user_test.input,
-            time_limit=dataset.time_limit,
-            memory_limit=dataset.memory_limit,
+            time_limit=time_limit,
+            memory_limit=memory_limit,
             info="evaluate user test %d" % (user_test.id),
             get_output=True,
             only_execution=True
