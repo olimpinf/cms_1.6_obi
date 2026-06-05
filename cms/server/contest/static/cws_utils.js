@@ -290,10 +290,11 @@ CMS.CWSUtils.prototype.update_time = function(usaco_like_contest, timer = -1) {
         if (server_time >= this.current_phase_end) {
             reload_overview();
         }
+        // ranido-begin
         $("#countdown_label").text(
-            $("#translation_until_contest_ends").text());
-        $("#countdown").text(
-            this.format_timedelta(this.current_phase_end - server_time));
+            $("#translation_time_expired").text());
+        $("#countdown").text("");
+        // ranido-end
         break;
     case +2:
         // Contest has already finished but analysis mode hasn't started yet.

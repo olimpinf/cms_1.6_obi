@@ -529,6 +529,9 @@ msgstr "Tempo para o início da competição:"
 msgid "Until contest ends:"
 msgstr "Tempo para o final da competição:"
 
+msgid "Your time has expired"
+msgstr "Seu tempo de prova está encerrado."
+
 msgid "Until analysis starts:"
 msgstr "Tempo para o início do modo de análise"
 
