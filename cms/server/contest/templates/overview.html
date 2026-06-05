@@ -193,20 +193,11 @@
 
 
 
-{# ranido-begin: hide task overview when user's time is up (phase +1) #}
-{% if (actual_phase == 0 or actual_phase >= 2) or participation.unrestricted %}
-{# ranido-end #}
+{# ranido-begin: task overview hidden — incomplete (C/C++ only); full info is on each task's statement page #}
+{#
 <h2>{% trans %}Task overview{% endtrans %}</h2>
 
 <table class="table table-bordered table-striped">
-    <!-- <colgroup>
-        <col class="task"/>
-        <col class="time_limit"/>
-        <col class="memory_limit"/>
-        <col class="n_inputs"/>
-        <col class="task_type"/>
-        <col class="files"/>
-    </colgroup> -->
     <thead>
         <tr>
             <th>{% trans %}Task{% endtrans %}</th>
@@ -215,75 +206,14 @@
             <th>{% trans %}Memory limit{% endtrans %}</th>
             <th>{% trans %}Type{% endtrans %}</th>
             <th>{% trans %}Files{% endtrans %}</th>
-{% if tokens_contest != TOKEN_MODE_DISABLED and tokens_tasks != TOKEN_MODE_DISABLED %}
-            <th>{% trans %}Tokens{% endtrans %}</th>
-{% endif %}
         </tr>
     </thead>
     <tbody>
-{% for t_iter in contest.tasks %}
-    {# ranido-begin #}
-    {% if t_iter.name != "tarefa" and t_iter.name != "hashedName-d8724aa0b88f985f11" %}
-    {# ranido-end #}
-        {% set task_allowed_languages = t_iter.get_allowed_languages() %}
-        {% set extensions = "[%s]"|format(task_allowed_languages|map("to_language")|map(attribute="source_extension")|unique|join("|")) %}
-        <tr>
-            <th>{{ t_iter.name }}</th>
-            <td>{{ t_iter.title }}</td>
-            <td>
-    {% if t_iter.active_dataset.time_limit is not none %}
-        {{ t_iter.active_dataset.time_limit|format_duration(length="long") }}
-    {% else %}
-        {% trans %}N/A{% endtrans %}
-    {% endif %}
-            </td>
-            <td>
-    {% if t_iter.active_dataset.memory_limit is not none %}
-        {{ t_iter.active_dataset.memory_limit|format_size }}
-    {% else %}
-        {% trans %}N/A{% endtrans %}
-    {% endif %}
-            </td>
-            <td>{{ get_task_type(dataset=t_iter.active_dataset).name }}</td>
-            <td>{{ t_iter.submission_format|map("replace", ".%l", extensions)|join(" ") }}</td>
-    {% if tokens_contest != TOKEN_MODE_DISABLED and tokens_tasks != TOKEN_MODE_DISABLED %}
-            <td>
-        {% if t_iter.token_mode == TOKEN_MODE_FINITE or t_iter.token_mode == TOKEN_MODE_INFINITE %}
-            {% trans %}Yes{% endtrans %}
-        {% else %}
-            {% trans %}No{% endtrans %}
-        {% endif %}
-            </td>
-    {% endif %}
-        </tr>
-    {# ranido-begin #}
-    {% endif %}
-    {# ranido-end #}
-{% endfor %}
     </tbody>
 </table>
-{% endif %}
-
-{# ranido-begin #}
-<p>Para soluções em Java, o nome do arquivo deve
-  ser <em>xxxx.java</em> e o nome da classe principal deve
-  ser <em>xxxx</em>, onde <em>xxxx</em> é o identificador da tarefa
-  {% if actual_phase == 0 or actual_phase == 3 %} (primeira coluna à
-  esquerda na tabela acima){% endif %}. Note que todas as letras
-  de <em>xxxx</em> são minúsculas.
-</p>
-{# TO DO!! copy files to static
-<p>Veja instruções para submissão e exemplos de soluções nas diferentes linguagens:
-  <ul>
-    <li><a target="_blank" href="https://olimpiada.ic.unicamp.br/pratique/exemplo_solucao_c">C</a></li>
-    <li><a target="_blank" href="https://olimpiada.ic.unicamp.br/pratique/exemplo_solucao_cpp">C++</a></li>
-    <li><a target="_blank" href="https://olimpiada.ic.unicamp.br/pratique/exemplo_solucao_py3">Python3</a></li>
-    <li><a target="_blank" href="https://olimpiada.ic.unicamp.br/pratique/exemplo_solucao_cms_java">Java</a></li>
-    <li><a target="_blank" href="https://olimpiada.ic.unicamp.br/pratique/exemplo_solucao_js">Javascript</a></li>
-  </ul>
-</p>
 #}
 {# ranido-end #}
+
 
 
 </div>
