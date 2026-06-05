@@ -193,7 +193,9 @@
 
 
 
-{% if actual_phase >= 0 or participation.unrestricted %}
+{# ranido-begin: hide task overview when user's time is up (phase +1) #}
+{% if (actual_phase == 0 or actual_phase >= 2) or participation.unrestricted %}
+{# ranido-end #}
 <h2>{% trans %}Task overview{% endtrans %}</h2>
 
 <table class="table table-bordered table-striped">
