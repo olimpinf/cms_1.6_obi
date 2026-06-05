@@ -192,7 +192,8 @@ ranido-end #}
                                     <span id="unread_count" class="label label-warning no_unread"></span>
                                 </a>
                             </li>
-    {% if actual_phase >= 0 or participation.unrestricted %}
+    {# ranido-begin: hide tasks when user's time is up (phase +1) #}
+    {% if (actual_phase == 0 or actual_phase >= 2) or participation.unrestricted %}
         {% for t_iter in contest.tasks %}
         {# ranido-begin #}
         {% if t_iter.name != "tarefa" and t_iter.name != "hashedName-d8724aa0b88f985f11" %}

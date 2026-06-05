@@ -292,7 +292,8 @@ CMS.CWSUtils.prototype.update_time = function(usaco_like_contest, timer = -1) {
         }
         // ranido-begin
         $("#countdown_label").text(
-            $("#translation_time_expired").text());
+            $("#translation_time_expired").text())
+            .css("color", "#c0392b");
         $("#countdown").text("");
         // ranido-end
         break;
