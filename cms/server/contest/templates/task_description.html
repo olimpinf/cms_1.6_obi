@@ -152,22 +152,24 @@
   function renderPage(num) {
       //console.log('[PDF] Rendering page', num, 'at scale', scale);
       pageRendering = true;
-      
+
       pdfDoc.getPage(num).then(function(page) {
 	  //console.log('[PDF] Page loaded, calculating viewport');
 	  const viewport = page.getViewport({scale: scale});
-	  
-	  //console.log('[PDF] Viewport size:', viewport.width, 'x', viewport.height);
-	  
-	  // Set canvas dimensions
-	  canvas.height = viewport.height;
-	  canvas.width = viewport.width;
-	  
+
+	  // Render at physical pixels to avoid blurriness on HiDPI / Windows scaled displays.
+	  const dpr = window.devicePixelRatio || 1;
+	  canvas.width  = Math.floor(viewport.width  * dpr);
+	  canvas.height = Math.floor(viewport.height * dpr);
+	  canvas.style.width  = Math.floor(viewport.width)  + 'px';
+	  canvas.style.height = Math.floor(viewport.height) + 'px';
+
 	  // Clear the canvas before rendering
 	  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	  const renderContext = {
 	      canvasContext: ctx,
+	      transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null,
 	      viewport: viewport
 	  };
 	  
@@ -190,9 +192,9 @@
 	        // IMPORTANT: Set the scale factor CSS variable
 	      textLayerDiv.style.setProperty('--scale-factor', scale);
 
-	      // Set text layer dimensions to match canvas
-	      textLayerDiv.style.width = canvas.width + 'px';
-	      textLayerDiv.style.height = canvas.height + 'px';
+	      // Set text layer dimensions to match CSS (logical) canvas size, not physical pixels
+	      textLayerDiv.style.width = canvas.style.width;
+	      textLayerDiv.style.height = canvas.style.height;
 	      
 	      // Render text layer with enhanced precision
 	      const textLayer = pdfjsLib.renderTextLayer({
@@ -414,11 +416,15 @@ loadingTask.promise.then(function(pdfDoc_) {
   
   pdfDoc.getPage(pageNum).then(function(page) {
     const viewport = page.getViewport({scale: scale});
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-    
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width  = Math.floor(viewport.width  * dpr);
+    canvas.height = Math.floor(viewport.height * dpr);
+    canvas.style.width  = Math.floor(viewport.width)  + 'px';
+    canvas.style.height = Math.floor(viewport.height) + 'px';
+
     const renderContext = {
       canvasContext: ctx,
+      transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null,
       viewport: viewport
     };
     
