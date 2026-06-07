@@ -582,14 +582,14 @@ loadingTask.promise.then(function(pdfDoc_) {
         {% for lang, m in memory_limits|dictsort(by="key") %}
 	    {% if lang == l %} {% if memory_limit_lang.append(m) %} {% endif %} {% endif %}
 	{% endfor %}
-        {% if memory_limit_lang %} {{ (memory_limit_lang.0 * 1024 * 1024)|format_size }} {% else %} {{ (task.active_dataset.memory_limit * 1024 * 1024)|format_size }} {% endif %}
+        {% if memory_limit_lang %} {{ memory_limit_lang.0|format_size }} {% else %} {{ task.active_dataset.memory_limit|format_size }} {% endif %}
     </td>
     {% endfor %}
     </tr>
 {% elif task.active_dataset.memory_limit is not none %}
     <tr>
       <th>{% trans %}Memory limit{% endtrans %}</th>
-      <td colspan="2">{{ (task.active_dataset.memory_limit * 1024 * 1024)|format_size }}</td>
+      <td colspan="2">{{ task.active_dataset.memory_limit|format_size }}</td>
     </tr>
 {% endif %}
 
@@ -611,14 +611,14 @@ loadingTask.promise.then(function(pdfDoc_) {
         {% for lang, m in memory_limits|dictsort(by="key") %}
 	    {% if lang == l %} {% if memory_limit_lang.append(m) %} {% endif %} {% endif %}
 	{% endfor %}
-        {% if memory_limit_lang %} {{ (memory_limit_lang.0 * 1024 * 1024)|format_size }} {% else %} {{ (task.active_dataset.memory_limit * 1024 * 1024)|format_size }} {% endif %}
+        {% if memory_limit_lang %} {{ memory_limit_lang.0|format_size }} {% else %} {{ task.active_dataset.memory_limit|format_size }} {% endif %}
     </td>
     {% endfor %}
     </tr>
 {% elif task.active_dataset.memory_limit is not none %}
     <tr>
       <th>{% trans %}Memory limit{% endtrans %}</th>
-      <td colspan="2">{{ (task.active_dataset.memory_limit * 1024 * 1024)|format_size }}</td>
+      <td colspan="2">{{ task.active_dataset.memory_limit|format_size }}</td>
     </tr>
 {% endif %}
 {# ranido-end #}
