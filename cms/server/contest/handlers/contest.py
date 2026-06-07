@@ -169,7 +169,7 @@ class ContestHandler(BaseHandler):
 
         try:
             # ranido-begin
-            logger.warning(f"[get_current_user] IP address provided by Tornado: {self.request.remote_ip}")
+            #logger.warning(f"[get_current_user] IP address provided by Tornado: {self.request.remote_ip}")
             # ranido-end
             ip_address = ipaddress.ip_address(self.request.remote_ip)
         except ValueError:
@@ -352,7 +352,7 @@ class ContestHandler(BaseHandler):
         # We don't need to check for xsrf if the request came with a custom
         # header, as those are not set by the browser.
         if "X-CMS-Authorization" in self.request.headers:
-            logger.warning("found X-CMS-AUTHORIZATION in request.headers")
+            #logger.warning("found X-CMS-AUTHORIZATION in request.headers")
             pass
         # ranido-begin
         else:

@@ -70,7 +70,7 @@ class ApiLoginHandler(ApiContestHandler):
 
         try:
             # ranido-begin
-            logger.warning(f"[ApiLoginHandler] IP address provided by Tornado: {self.request.remote_ip}")
+            #logger.warning(f"[ApiLoginHandler] IP address provided by Tornado: {self.request.remote_ip}")
             # ranido-end
             ip_address = ipaddress.ip_address(self.request.remote_ip)
         except ValueError:

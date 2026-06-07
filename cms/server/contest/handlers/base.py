@@ -251,9 +251,9 @@ class BaseHandler(CommonRequestHandler):
         if parsed_data:
             self.ua_validated = True
             self.ua_contestant_id = parsed_data['id']
-            logger.warning(
-                f"Validated User-Agent for contestant {self.ua_contestant_id} "
-            )    
+            # logger.warning(
+            #     f"Validated User-Agent for contestant {self.ua_contestant_id} "
+            # )    
     # ranido-end
 
     def setup_locale(self):
