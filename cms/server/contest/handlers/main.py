@@ -246,8 +246,6 @@ class LoginHandler(ContestHandler):
                            self.request.remote_ip)
             return None
 
-        logger.warning(f"IP address = {ip_address}")
-        
         participation, cookie = validate_login(
             self.sql_session, self.contest, self.timestamp, username, password,
             ip_address)

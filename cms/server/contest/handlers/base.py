@@ -69,7 +69,7 @@ logger = logging.getLogger(__name__)
 
 # ranido-begin
 UA_SECRET = "1hrs5g1qs@svr-o(-3atjnz8evwmake03kyjwute023mdeu" # same as in django.settings
-UA_MAX_AGE_SECONDS = 6*3600  # User-Agent valid for 6 hours
+UA_MAX_AGE_SECONDS = 180*60  # User-Agent valid for 2h30min (exam 2h + 1h grace)
 UA_VALIDATION_ENABLED = True
 
 def b64url_no_pad_decode(s: str) -> bytes:
