@@ -50,7 +50,7 @@
 {# Base URL for self-hosted CDN assets (S3/CloudFront). Set this once.         #}
 {# Run scripts/fetch-cdn.sh in the editor project to upload pdfjs to S3/shared. #}
 {# Find your CF domain: aws cloudfront get-distribution --distribution-id E3DU7ZRIYS8N7E --query 'Distribution.DomainName' #}
-{% set CDN_BASE = "https://d1db7v42mn1f2s.cloudfront.net/shared" %}
+{% set CDN_BASE = "https://editor.provas.ic.unicamp.br/shared" %}
 
 <div id="pdf-container" style="width: 100%; height: 100%; display: flex; flex-direction: column;">
   <!-- PDF Controls -->
