@@ -1,1 +1,9 @@
 pip install .
+
+# To enable UA_SECRET verification:
+
+# edit UA_VALIDATION_ENABLED in
+emacs cms/server/contest/handlers/base.py
+
+# edit the task submission template (look for 'ranido')
+emacs cms/server/contest/templates/task_submissions.html
