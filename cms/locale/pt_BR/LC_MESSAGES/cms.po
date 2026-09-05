@@ -125,7 +125,7 @@ msgid "Execution killed by signal"
 msgstr "A execução foi terminada"
 
 msgid "The evaluation was killed by a signal."
-msgstr "A avaliação foi terminada (um erro ocorreu durante a execução)."
+msgstr "A avaliação foi terminada devido a um erro que ocorreu durante a execução da sua solução."
 
 msgid "Execution failed because the return code was nonzero"
 msgstr "Execução terminou com erro"
@@ -523,7 +523,9 @@ msgid "Programming languages and libraries"
 msgstr "Linguagens de programação e bibliotecas"
 
 msgid "The main Java class of the solution should have exactly the same name as the task."
-msgstr "A classe Java principal da solução deve ter exatamente o mesmo nome que a Tarefa"
+msgstr "Para submissões (botão 'Submeter' do Editor OBI), a classe Java pública da solução deve ter exatamente o mesmo nome "
+"da tarefa para a qual a submissão está sendo feita (todas as letras minúsculas). Para "
+"execuções (botão 'Executar' do EditorOBI), a classe Java pública deve ter sempre o nome 'tarefa'."
 
 msgid "Submission details for compilation"
 msgstr "Detalhes da compilação para a submissão"
