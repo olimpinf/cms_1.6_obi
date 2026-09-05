@@ -122,10 +122,10 @@ msgid "Your submission used too much memory."
 msgstr "Sua submissão usou muita memória."
 
 msgid "Execution killed by signal"
-msgstr "A execução foi terminada (um erro ocorreu durante a execução)."
+msgstr "A execução foi terminada"
 
 msgid "The evaluation was killed by a signal."
-msgstr "A avaliação foi terminada (um erro ocorreu durante a avaliação)."
+msgstr "A avaliação foi terminada (um erro ocorreu durante a execução)."
 
 msgid "Execution failed because the return code was nonzero"
 msgstr "Execução terminou com erro"
