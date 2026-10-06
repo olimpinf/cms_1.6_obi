@@ -59,7 +59,8 @@ from .api import \
     ApiTaskListHandler
 # ranido-begin
 from .api import ApiTestHandler, \
-    ApiTestStatusHandler
+    ApiTestStatusHandler, \
+    ApiSubmissionStatusHandler
 # ranido-end
 
 HANDLERS = [
@@ -114,6 +115,7 @@ HANDLERS = [
     # ranido-begin
     (r"/api/(.*)/test", ApiTestHandler),
     (r"/api/(.*)/test/(.*)", ApiTestStatusHandler),
+    (r"/api/(.*)/submission/(.*)", ApiSubmissionStatusHandler),
     # ranido-end
 
     # The following prefixes are handled by WSGI middlewares:

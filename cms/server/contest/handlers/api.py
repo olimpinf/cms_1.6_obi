@@ -171,7 +171,7 @@ class ApiSubmitHandler(ApiContestHandler):
 # ranido-begin
 import tornado.web
 
-from cms import config
+from cms import config, FEEDBACK_LEVEL_FULL
 from cms.db import UserTest, UserTestResult
 from cms.grading.languagemanager import get_language
 from cms.server import multi_contest
@@ -303,3 +303,62 @@ class ApiSubmissionListHandler(ApiContestHandler):
             .all()
         )
         self.json({'list': [{"id": str(s.opaque_id)} for s in submissions]})
+
+# ranido-begin
+class ApiSubmissionStatusHandler(ApiContestHandler):
+    """Polled by EditorOBI after a real submission (not a test) to show
+    the per-subtask score breakdown inline, same shape/purpose as
+    ApiTestStatusHandler above but for Submission/SubmissionResult instead
+    of UserTest/UserTestResult. Reuses CMS's own score_type_object.get_html_details()
+    (same call SubmissionDetailsHandler in tasksubmission.py makes) so the
+    HTML/visibility rules (tokens, analysis mode, feedback_level) are
+    exactly what CWS's own "Details" view would show this contestant --
+    no separate scoring/visibility logic to keep in sync.
+
+    """
+
+    refresh_cookie = False
+
+    @api_login_required
+    @actual_phase_required(0, 1, 2, 3, 4)
+    @multi_contest
+    def get(self, task_name, opaque_id):
+        task = self.get_task(task_name)
+        if task is None:
+            raise tornado.web.HTTPError(404)
+
+        submission = self.get_submission(task, opaque_id)
+        if submission is None:
+            raise tornado.web.HTTPError(404)
+
+        sr = submission.get_result(task.active_dataset)
+        data = dict()
+
+        if sr is None or not sr.compiled():
+            data["status"] = "compiling"
+        elif sr.compilation_failed():
+            data["status"] = "compilation_failed"
+            data["compilation_stdout"] = sr.compilation_stdout
+            data["compilation_stderr"] = sr.compilation_stderr
+        elif not sr.scored():
+            data["status"] = "evaluating"
+        else:
+            data["status"] = "scored"
+            # Same visibility rule SubmissionDetailsHandler uses: full
+            # feedback only with a used token or during analysis mode,
+            # public (subtask-limited per the task's own config) otherwise
+            # -- matters beyond just Pratique's "unrestricted" use, since
+            # this same endpoint would show real exam-time visibility
+            # rules correctly if ever polled there too.
+            is_analysis_mode = self.r_params["actual_phase"] == 3
+            full_feedback = submission.tokened() or is_analysis_mode
+            score_type = task.active_dataset.score_type_object
+            raw_details = sr.score_details if full_feedback else sr.public_score_details
+            feedback_level = FEEDBACK_LEVEL_FULL if is_analysis_mode else task.feedback_level
+            data["score"] = sr.score if full_feedback else sr.public_score
+            data["max_score"] = score_type.max_score if full_feedback else score_type.max_public_score
+            data["details_html"] = score_type.get_html_details(
+                raw_details, feedback_level, translation=self.translation)
+
+        self.write(data)
+# ranido-end
