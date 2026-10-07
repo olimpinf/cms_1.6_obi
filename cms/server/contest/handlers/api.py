@@ -43,6 +43,40 @@ class ApiContestHandler(ContestHandler):
         super().__init__(*args, **kwargs)
         self.api_request = True
 
+    # ranido-begin
+    # Allows EditorOBI (hosted on a different domain than this CMS instance,
+    # e.g. editor.provas.ic.unicamp.br calling pratique.olimpiada.ic.unicamp.br
+    # when opened from Pratique in a plain browser tab) to make cross-origin
+    # API calls. Inside ExamLock this isn't needed -- its Electron main
+    # process patches these same headers at the network layer instead (see
+    # exam-app-branch-version2.0/main.js's webRequest.onHeadersReceived) --
+    # but a plain browser has no equivalent, and this server otherwise sends
+    # no CORS headers at all, so the browser blocks every request outright.
+    #
+    # Restricted to the one known editor origin rather than reflecting any
+    # Origin, since requests here are authenticated via X-CMS-Authorization
+    # (a real bearer-style credential, not implicitly-sent cookies) -- no
+    # reason to widen this beyond the one caller that actually needs it.
+    ALLOWED_ORIGIN = "https://editor.provas.ic.unicamp.br"
+
+    def set_default_headers(self):
+        origin = self.request.headers.get("Origin")
+        if origin == self.ALLOWED_ORIGIN:
+            self.set_header("Access-Control-Allow-Origin", origin)
+        self.set_header("Access-Control-Allow-Headers", "Content-Type, X-CMS-Authorization")
+        self.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+
+    def options(self, *args, **kwargs):
+        # The CORS preflight itself: Tornado's default for an unimplemented
+        # method is 405, which browsers treat as "preflight failed" and
+        # block the real request entirely, regardless of what it would have
+        # returned. Deliberately undecorated (no @api_login_required etc.)
+        # -- a preflight never carries the real request's auth header, so
+        # requiring it here would make every preflight fail by construction.
+        self.set_status(204)
+        self.finish()
+    # ranido-end
+
 
 class ApiLoginHandler(ApiContestHandler):
     """Login handler.
